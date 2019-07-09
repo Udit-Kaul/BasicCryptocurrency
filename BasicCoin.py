@@ -142,6 +142,7 @@ def is_valid():
         response={'message':'Houston, we have a problem. The Blockchain is not valid !!'}
     return jsonify(response),200
 # Adding a new transaction to the Blockchain
+@app.route('/add_transaction',methods=['POST'])
 def add_transaction():
     json = request.get_json()
     transaction_keys ={'sender', 'receiver', 'amount'}
@@ -151,5 +152,17 @@ def add_transaction():
     response={'message':f'Houston, this transaction will be added to the block {index}'}
     return jsonify(response), 201
 # Decentralizing the Blockchain
+
+# Connecting new nodes
+@app.route('/connect_node',methods=['POST'])
+def connect_node():
+    json=request.get_json()
+    nodes=json.get('nodes')
+    if nodes is None:
+        return 'Houston, there are no nodes', 400
+    for node in nodes:
+        response={'message':'Houston, all nodes are now connected. The blockchain now contains the following nodes:',
+        'total_nodes':list(blockchain.nodes)}
+    return jsonify(response), 201
 # Running the app
 app.run(host='0.0.0.0', port=5000)
