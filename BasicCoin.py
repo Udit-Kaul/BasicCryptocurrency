@@ -2,16 +2,26 @@
 import datetime
 import hashlib
 import json
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+import requests
+from uuid import uuid4
+from urllib.parse import urlparse
 
 # Building a Blockchain
 class Blockchain:
     def __init__(self):
         self.chain=[]
+        self.transactions=[]
         self.create_block(proof=1, previous_hash='0')
+        self.nodes=set()
     
     def create_block(self, proof, previous_hash):
-        block={'index':len(self.chain)+1,'timestamp':str(datetime.datetime.now()),'proof':proof,'previous_hash':previous_hash }
+        block={'index':len(self.chain)+1,
+        'timestamp':str(datetime.datetime.now()),
+        'proof':proof,
+        'previous_hash':previous_hash,
+        'transactions' : self.transactions }
+        self.transactions=[]
         self.chain.append(block)
         return block
     def get_previous_block(self):
@@ -58,7 +68,33 @@ class Blockchain:
             previous_block = block
             block_index+=1
             return True
+    def add_transaction(self,sender, receiver, amount):
+        self.transactions.append({'sender':sender,
+        'receiver':receiver,
+        'amount':amount})
+        previous_block=self.get_previous_block
+        return previous_block['index']+1
     
+    def add_node(self, address):
+        parsed_address=urlparse(address)
+        self.nodes.add(parsed_address.netloc)
+    
+    def replace_chain(self):
+        network = self.nodes
+        longest_chain=None
+        max_length=len(self.chain)
+        for node in network:
+            response=requests.get(f' http://{node}/get_chain')
+            if response.status_code==200:
+                length=response.json()['length']
+                chain=response.json()['chain']
+                if length > max_length & self.is_chain_valid(chain):
+                    max_length=length
+                    longest_chain=chain
+        if longest_chain:
+            self.chain=longest_chain
+            return True
+        return False
 # Mining Blockchain
 
 # Creating a simple webapp using Flask
@@ -102,7 +138,7 @@ def is_valid():
     else:
         response={'message':'Houston, we have a problem. The Blockchain is not valid !!'}
     return jsonify(response),200
-
+# Decentralizing the Blockchain
 # Running the app
 
 app.run(host='0.0.0.0', port=5000)
