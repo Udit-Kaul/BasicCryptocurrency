@@ -68,6 +68,7 @@ class Blockchain:
             previous_block = block
             block_index+=1
             return True
+            
     def add_transaction(self,sender, receiver, amount):
         self.transactions.append({'sender':sender,
         'receiver':receiver,
@@ -111,7 +112,7 @@ def mine_block():
     previous_proof=previous_block['proof']
     proof=blockchain.proof_of_work(previous_proof)
     previous_hash=blockchain.hash(previous_block)
-    blockchain.add_transaction(sender=node_address,receiver='Node1', amount=10)
+    blockchain.add_transaction(sender=node_address, receiver='Node1', amount=10)
     block=blockchain.create_block(proof,previous_hash)
     response={'message':'Congratulations !! You Have Successfully Mined The Block',
     'index':block['index'],
@@ -161,6 +162,7 @@ def connect_node():
     if nodes is None:
         return 'Houston, there are no nodes', 400
     for node in nodes:
+        blockchain.add_node(node)
         response={'message':'Houston, all nodes are now connected. The blockchain now contains the following nodes:',
         'total_nodes':list(blockchain.nodes)}
     return jsonify(response), 201

@@ -161,17 +161,19 @@ def connect_node():
     if nodes is None:
         return 'Houston, there are no nodes', 400
     for node in nodes:
+        blockchain.add_node(node)
         response={'message':'Houston, all nodes are now connected. The blockchain now contains the following nodes:',
         'total_nodes':list(blockchain.nodes)}
     return jsonify(response), 201
 # Replacing the chain with the longest chain if needed
 @app.route('/replace_chain',methods=['GET'])
 def replace_chain():
+    blockchain.add_node(node)
     is_chain_replaced = blockchain.replace_chain()
     
     if is_chain_replaced:
         response={'message':'Houston, The nodes had different chains so was replaced by the longest one.',
-        'new_Chain':blockchain.chain}
+        'new_Chain':list(blockchain.chain)}
     else:
         response={'message':'Houston, All Good. The chain is the longest one !!',
         'actual_chain':blockchain.chain}
