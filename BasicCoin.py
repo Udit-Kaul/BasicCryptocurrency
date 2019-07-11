@@ -165,7 +165,7 @@ def connect_node():
         response={'message':'Houston, all nodes are now connected. The blockchain now contains the following nodes:',
         'total_nodes':list( blockchain.nodes)}
     return jsonify(response), 201
-# Replacing the chain with the longest chain if needed
+# Replacing the chain with the longest chain if needed to maintain consensus in the system
 @app.route('/replace_chain',methods=['GET'])
 def replace_chain():
     is_chain_replaced = blockchain.replace_chain()
