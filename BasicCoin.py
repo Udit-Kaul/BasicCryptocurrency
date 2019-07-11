@@ -69,11 +69,11 @@ class Blockchain:
             block_index+=1
             return True
     def add_transaction(self,sender, receiver, amount):
-        self.transactions.append({'sender':sender,
-        'receiver':receiver,
-        'amount':amount})
-        previous_block=self.get_previous_block
-        return previous_block['index']+1
+        self.transactions.append({'sender': sender,
+                                  'receiver': receiver,
+                                  'amount': amount})
+        previous_block = self.get_previous_block()
+        return previous_block['index'] + 1
     
     def add_node(self, address):
         parsed_address=urlparse(address)
@@ -88,7 +88,7 @@ class Blockchain:
             if response.status_code==200:
                 length=response.json()['length']
                 chain=response.json()['chain']
-                if length > max_length & self.is_chain_valid(chain):
+                if length > max_length and self.is_chain_valid(chain):
                     max_length=length
                     longest_chain=chain
         if longest_chain:
@@ -113,7 +113,7 @@ def mine_block():
     previous_hash=blockchain.hash(previous_block)
     blockchain.add_transaction(sender=node_address,receiver='Udit', amount=10)
     block=blockchain.create_block(proof,previous_hash)
-    response={'message':'Congratulations !! You Have Successfully Mined The Block',
+    response={'message':'Houston, Congratulations !! You Have Successfully Mined The Block',
     'index':block['index'],
     'timestamp':block['timestamp'],
     'proof':block['proof'],
